@@ -1,0 +1,46 @@
+# Authorization: 
+GET http://127.0.0.1:8000/api/todo/
+
+###
+
+GET http://127.0.0.1:8000/api/todo/
+Authorization: token 307688e128b8061b74e147fbebae639f1efae7fb
+###
+
+POST http://127.0.0.1:8000/api-auth-token/
+Content-type: application/json;
+
+{
+    "username" : "admin",
+    "password" : "admin"
+}
+
+###
+
+POST http://127.0.0.1:8000/api/todo/
+Content-type: application/json;
+Authorization: token 307688e128b8061b74e147fbebae639f1efae7fb
+
+{
+    "title": "Проверить работу CRUD",
+    "author": "Kirill",
+    "tags": [
+      "Спальня"
+    ],
+    "is_made": false
+}
+
+###
+
+PATCH http://127.0.0.1:8000/api/todo/9/
+Content-type: application/json;
+Authorization: token 307688e128b8061b74e147fbebae639f1efae7fb
+
+{
+    "is_made": true
+}
+
+###
+
+DELETE http://127.0.0.1:8000/api/todo/5/
+Authorization: token 307688e128b8061b74e147fbebae639f1efae7fb

@@ -28,8 +28,8 @@ class Post(models.Model):
     title = models.CharField(max_length=100, verbose_name='Заголовок')
     author = models.ForeignKey(
         Author,
-        on_delete=models.CASCADE, 
-        verbose_name='Автор'
+        on_delete=models.CASCADE,
+        verbose_name='Автор',
     )
     tags = models.ManyToManyField(Tag, verbose_name='Тэги')
     date = models.DateTimeField(auto_now_add=True, verbose_name='Дата')
