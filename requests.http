@@ -1,13 +1,13 @@
 # Authorization: 
-GET http://127.0.0.1:8000/api/todo/
+GET https://pandikk.pythonanywhere.com/api/
 
 ###
 
-GET http://127.0.0.1:8000/api/todo/
-Authorization: token 307688e128b8061b74e147fbebae639f1efae7fb
+GET https://pandikk.pythonanywhere.com/api/
+Authorization: token 91fb394dc70d6443f50cbc1ec5f9c6023d155266
 ###
 
-POST http://127.0.0.1:8000/api-auth-token/
+POST https://pandikk.pythonanywhere.com/api-auth-token/
 Content-type: application/json;
 
 {
@@ -17,24 +17,25 @@ Content-type: application/json;
 
 ###
 
-POST http://127.0.0.1:8000/api/todo/
+POST https://pandikk.pythonanywhere.com/api/todo/
 Content-type: application/json;
-Authorization: token 307688e128b8061b74e147fbebae639f1efae7fb
+Authorization: token 91fb394dc70d6443f50cbc1ec5f9c6023d155266
 
 {
-    "title": "Проверить работу CRUD",
-    "author": "Kirill",
+    "title": "Сделать дела 2",
+    "author": "pandik",
     "tags": [
-      "Спальня"
+      "Спальня",
+      "Кухня"
     ],
-    "is_made": false
+    "is_made": true
 }
 
 ###
 
-PATCH http://127.0.0.1:8000/api/todo/9/
+PATCH https://pandikk.pythonanywhere.com/api/todo/1/
 Content-type: application/json;
-Authorization: token 307688e128b8061b74e147fbebae639f1efae7fb
+Authorization: token 91fb394dc70d6443f50cbc1ec5f9c6023d155266
 
 {
     "is_made": true
@@ -42,5 +43,5 @@ Authorization: token 307688e128b8061b74e147fbebae639f1efae7fb
 
 ###
 
-DELETE http://127.0.0.1:8000/api/todo/5/
-Authorization: token 307688e128b8061b74e147fbebae639f1efae7fb
+DELETE https://pandikk.pythonanywhere.com/api/todo/3/
+Authorization: token 91fb394dc70d6443f50cbc1ec5f9c6023d155266
