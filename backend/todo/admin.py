@@ -27,5 +27,4 @@ class PostConfig(admin.ModelAdmin):
     list_filter = ('id', 'title')
     search_fields = ('title', 'author', 'tags', 'is_made')
 
-
 admin.site.register(Post, PostConfig)
