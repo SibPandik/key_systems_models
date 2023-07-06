@@ -4,7 +4,7 @@ GET https://pandikk.pythonanywhere.com/api/
 ###
 
 GET https://pandikk.pythonanywhere.com/api/
-Authorization: token 91fb394dc70d6443f50cbc1ec5f9c6023d155266
+Authorization: token dacee1060889841bdb8ddf3c634cd97d4793b267
 ###
 
 POST https://pandikk.pythonanywhere.com/api-auth-token/
@@ -19,7 +19,7 @@ Content-type: application/json;
 
 POST https://pandikk.pythonanywhere.com/api/todo/
 Content-type: application/json;
-Authorization: token 91fb394dc70d6443f50cbc1ec5f9c6023d155266
+Authorization: token dacee1060889841bdb8ddf3c634cd97d4793b267
 
 {
     "title": "Сделать дела 2",
@@ -35,7 +35,7 @@ Authorization: token 91fb394dc70d6443f50cbc1ec5f9c6023d155266
 
 PATCH https://pandikk.pythonanywhere.com/api/todo/1/
 Content-type: application/json;
-Authorization: token 91fb394dc70d6443f50cbc1ec5f9c6023d155266
+Authorization: token dacee1060889841bdb8ddf3c634cd97d4793b267
 
 {
     "is_made": true
@@ -44,4 +44,4 @@ Authorization: token 91fb394dc70d6443f50cbc1ec5f9c6023d155266
 ###
 
 DELETE https://pandikk.pythonanywhere.com/api/todo/3/
-Authorization: token 91fb394dc70d6443f50cbc1ec5f9c6023d155266
+Authorization: token dacee1060889841bdb8ddf3c634cd97d4793b267

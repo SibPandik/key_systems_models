@@ -17,7 +17,7 @@ class Student {
     increseAge () {
         this.age ++
     }
-    
+
     increaseAvgScore (score) {
         this.avgScore += score
         
