@@ -1,82 +1,82 @@
 <template>
   <div class="input-form">
     <!-- Popup -->
-    <popup v-if="isPopupVisible" @closePopup="closePopup">
+    <u-popup v-if="isPopupVisible" @closePopup="showPopup">
       <!-- Form -->
       <form class="form" @submit.prevent="handleSubmit">
         <!-- Title -->
         <div class="v-title">
-          <label class="title">Название:</label>
-          <input class="v-input" type="text" v-model="postData.title" />
+          <u-input class="u-input" placeholder="Название" type="text" v-model="postData.title" />
         </div>
         <!-- Select tags -->
         <div class="v-option">
-          <label class="tags">Теги:</label>
-          <select id="tags" v-model="postData.tags">
-            <option v-for="tag in tags" :key="tag.id" :value="tag.name">{{ tag.name }}</option>
-          </select>
+          <u-select v-model="selectedTag" :options="tags" :text='"Выберите тэг"'></u-select>
           <div v-if="!isAddTagVisible" class="add" @click="toggleAddTag">
             <div class="add-author">+</div>
           </div>
           <div v-else class="add">
             <div class="add-author-cross" @click="toggleAddTag">&times;</div>
-            <input class="v-input-add" type="text" v-model="newTag" />
-            <button class="create-btn" type="submit" @click="addTag">Добавить</button>
+            <u-input class="u-input-add" type="text" v-model="newTag" />
+            <u-button class="create-btn" type="submit" @click="addTag">Добавить</u-button>
           </div>
         </div>
         <!-- Select Author -->
         <div class="v-option">
-          <label class="tags">Автор:</label>
-          <select id="author" v-model="postData.authors">
-            <option v-for="author in authors" :key="author.id" :value="author.name">{{ author.name }}</option>
-          </select>
+          <u-select v-model="selectedAuthor" :options="authors" :text='"Выберите автора"'></u-select>
           <div v-if="!isAddAuthorVisible" class="add" @click="toggleAddAuthor">
             <div class="add-author">+</div>
           </div>
           <div v-else class="add">
             <div class="add-author-cross" @click="toggleAddAuthor">&times;</div>
-            <input class="v-input-add" type="text" v-model="newAuthor" />
-            <button class="create-btn" type="submit" @click="addAuthor">Добавить</button>
+            <u-input class="u-input-add" type="text" v-model="newAuthor" />
+            <u-button class="create-btn" type="submit" @click="addAuthor">Добавить</u-button>
           </div>
         </div>
         <!-- Is made checkbox -->
         <div class="v-checkbox">
           <label class="is-made">Сделано ли задание:</label>
-          <input type="checkbox" id="isMade" v-model="postData.is_made" />
+          <u-input type="checkbox" v-model="isChecked" />
         </div>
         <div class="wrapper-btn">
-          <button class="create-btn" type="submit" @click="addTask">Создать</button>
+          <u-button class="create-btn" type="submit" @click="addTask">Создать</u-button>
         </div>
       </form>
-    </popup>
+    </u-popup>
 
-    <button class="create-btn" @click="showPopup">Создать задачу</button>
+    <u-button class="create-btn" @click="showPopup">Создать задачу</u-button>
   </div>
 </template>
 
 <script>
-import Popup from './Popup.vue';
-
-
 export default {
   name: "InputForm",
-  components: { Popup },
   data() {
     return {
-      isPopupVisible: false,
-      isAddTagVisible: false,
-      isAddAuthorVisible: false,
+      isPopupVisible: false,      // Состояние видимости модального окна
+      isAddTagVisible: false,     // Состояние видимости формы для ввода тэга
+      isAddAuthorVisible: false,  // Состояние видимости формы для ввода автора
+      isChecked: false,           // Состояние чекбокса
+
+      //Массив объектов с тэгами
       tags: [
-        { id: 0, name: "" },
-        { id: 1, name: "KSB" },
-        { id: 2, name: "Home" },
-        { id: 3, name: "Other" },
+        { id: 1, value: "KSB", name: "KSB" },
+        { id: 2, value: "Home", name: "Home" },
+        { id: 3, value: "Other", name: "Other" },
       ],
+
+      //Массив объектов с авторами
       authors: [
-        { id: 1, name: "Кирилл" },
-        { id: 2, name: "Никита" },
-        { id: 3, name: "Саня" },
+        { id: 1, value: "Кирилл", name: "Кирилл" },
+        { id: 2, value: "Никита", name: "Никита" },
+        { id: 3, value: "Саня", name: "Саня" },
       ],
+
+      newTag: "",         // Состояние из инпута с вводом тэга
+      selectedTag: "",    // Значение выбраного тэга
+      newAuthor: "",      // Состояние из инпута с вводом автора
+      selectedAuthor: "", // Значение выбранного автора
+      
+      // Обьект поста
       postData: {
         id: Date.now(),
         title: "",
@@ -90,10 +90,10 @@ export default {
   methods: {
     // Открыть/закрыть модальное окно
     showPopup() {
-      this.isPopupVisible = true;
+      this.isPopupVisible = !this.isPopupVisible;
     },
     closePopup() {
-      this.isPopupVisible = false;
+      this.isPopupVisible = !this.isPopupVisible;
     },
 
     // Скрыть/показать форму для добавление тэга и автора
@@ -109,27 +109,48 @@ export default {
     // Добавление тэга
     addTag() {
       if (this.newTag.trim() !== "") {
-        this.tags.push({ id: this.tags.length, name: this.newTag.trim() });
+        this.tags.push({
+          id: this.tags.length,
+          value: this.newTag.trim(),
+          name: this.newTag.trim()
+        });
       }
       this.newTag = "";
+      this.toggleAddTag() // Закрываем форму после добавления 
     },
 
     // Добавление автора
     addAuthor() {
       if (this.newAuthor.trim() !== "") {
-        this.authors.push({ id: this.authors.length, name: this.newAuthor.trim() });
+        this.authors.push({
+          id: this.authors.length,
+          value: this.newAuthor.trim(),
+          name: this.newAuthor.trim()
+        });
       }
       this.newAuthor = "";
+      this.toggleAddAuthor() // Закрываем форму после добавления
     },
+
     addTask() {
       const date = new Date();                        // Создание объекта Date с текущей датой и временем
+      this.postData.id = Date.now()                   // Берем id из текущего времени в миллисекундах
       this.postData.date = date.toLocaleDateString(); // Преобразование даты в строку с форматом даты
-      this.$emit('create', { ...this.postData });
-      this.postData.title = "";
+
+      this.postData.tags = this.selectedTag;          // Передаем в postData.tags выбранный нами тэг в u-select
+      this.postData.authors = this.selectedAuthor;    // Передаем в postData.authors выбранного тами автора в u-select
+
+      this.$emit('create', { ...this.postData });     // Пушим новое задание
+
+      // Очищаем все переменные
       this.postData.tags = "";
+      this.postData.title = "";
       this.postData.authors = "";
       this.postData.is_made = false;
       this.isPopupVisible = false;
+      this.selectedAuthor = "";
+      this.selectedTag = "";
+
     }
   },
 };
@@ -143,6 +164,10 @@ export default {
 }
 
 .v-checkbox {
+  display: flex;
+}
+
+.v-checkbox {
   margin-bottom: 20px;
 }
 
@@ -152,8 +177,12 @@ export default {
   margin-right: 15px;
 }
 
+.is-made {
+  margin-top: 2px;
+}
+
 .v-option {
-  display: flex;  
+  display: flex;
 }
 
 .add {
@@ -161,10 +190,6 @@ export default {
   align-items: center;
 }
 
-.v-input-add {
-  width: 100px;
-  margin-right: 20px;
-}
 
 .add-author,
 .add-tag,
@@ -193,19 +218,6 @@ select:focus {
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
-input[type="text"] {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-input[type="text"]:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-}
-
 .form {
   font-size: 20px;
   display: flex;
@@ -218,7 +230,7 @@ input[type="text"]:focus {
   .v-option {
     display: flex;
     flex-direction: column;
-  }  
+  }
 
   .add {
     margin-top: 10px;
@@ -240,34 +252,16 @@ input[type="text"]:focus {
   margin-top: 20px;
 }
 
-.create-btn {
-  padding: 10px 20px;
-  background-color: #5de633;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-  box-shadow: 0 0 5px #5de633;
-}
-
-.create-btn:hover {
-  background-color: #5add32;
-  box-shadow: 0 0 8px #5de633;
-}
-
-.create-btn:focus {
-  outline: none;
-}
-
-.create-btn:active {
-  background-color: #5add32;
-  box-shadow: 0 0 3px #5de633;
+@media (max-width: 560px) {
+  .input-form {
+    margin: 10px
+  }
 }
 
 @media (max-width: 460px) {
-  .create-btn{
-    font-size: 12px;
+  .input-form {
+    margin: 0 0 13px 0;
+    height: 48px;
   }
 }
 

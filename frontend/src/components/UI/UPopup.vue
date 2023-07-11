@@ -11,7 +11,7 @@
 
 <script>
 export default {
-    name: "Popup",
+    name: "UPopup",
     methods: {
         closePopup() {
             this.$emit('closePopup')
