@@ -1,9 +1,15 @@
 from rest_framework import serializers
+from rest_framework import exceptions
 
 from todo.models import Author, Post, Tag
 
 
 class TagSerializer(serializers.ModelSerializer):
+
+    def validate_name(self, value):
+        if len(value) <= 3:
+            raise exceptions.ValidationError(detail="Название тэга не должно быть меньше 4")
+        return value
 
     class Meta:
         model = Tag
@@ -11,6 +17,11 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class AuthorSerializer(serializers.ModelSerializer):
+
+    def validate_name(self, value):
+        if len(value) <= 3:
+            raise exceptions.ValidationError(detail="Имя автора не должно быть меньше 4")
+        return value
 
     class Meta:
         model = Author

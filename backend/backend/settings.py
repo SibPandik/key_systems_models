@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-5@o!c-$fgaihl)-#e^^*tru$ea$f4skilac-i0f7%+5q*q+66^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['pandikk.pythonanywhere.com']
+ALLOWED_HOSTS = ['pandikk.pythonanywhere.com', 'localhost']
 
 
 # Application definition
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'corsheaders',
     'todo',
     'user',
 ]
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -138,4 +140,6 @@ STATIC_ROOT = BASE_DIR / 'collected_static'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CORS_ORIGIN_ALLOW_ALL = True
 
