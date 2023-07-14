@@ -8,8 +8,8 @@
 </template>
 
 <script>
-import Header from './Header.vue';
-import Task from './Task.vue';
+import Header from '../components/Header.vue';
+import Task from '../components/Task.vue';
 
 export default {
     components: {

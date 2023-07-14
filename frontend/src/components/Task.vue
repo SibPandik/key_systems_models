@@ -10,6 +10,7 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 import InputForm from './InputForm.vue'
 import RandomJoke from './RandomJoke.vue'
 import TaskItem from './TaskItem.vue'
@@ -20,35 +21,54 @@ export default {
     data() {
         return {
             selectedTypeOfSort: "", // Выбранный тип сортировки
-            // Массив объектов с постами
-            posts: [
-                { id: 1, title: "Сделать Vue приложение", tags: "KSB", date: "10.07.2023", authors: "Kirill", is_made: true },
-                { id: 2, title: "Купить молока", tags: "Market", date: "09.07.2022", authors: "Александр", is_made: false },
-                { id: 3, title: "Найти анекдот", tags: "Утенок", date: "09.07.2023", authors: "Николай", is_made: false },
-            ],
             // Массив объектов значений и названий сортировки
             sortTextData: [
-                { value: "title", name: "По названию" },
-                { value: "tags", name: "По тэгам" },
-                { value: "date", name: "По дате" },
-                { value: "authors", name: "По автору" },
+                { name: "id", value: "По №" },
+                { name: "title", value: "По названию" },
+                { name: "author", value: "По автору" },
+                { name: "tags", value: "По тэгам" },
+                { name: "date", value: "По дате" },
+                { name: "is_made", value: "По выполнености" },
             ],
         }
     },
+    created() {
+        this.getAllPosts()
+    },
     computed: {
+        ...mapGetters(['allPosts']),
         // Сортировка
         sortedPosts() {
-            return [...this.posts].sort((post1, post2) => post1[this.selectedTypeOfSort]?.localeCompare(post2[this.selectedTypeOfSort]))
+            return [...this.allPosts].sort((post1, post2) => {
+                const value1 = post1[this.selectedTypeOfSort];
+                const value2 = post2[this.selectedTypeOfSort];
+
+                // Проверяем, являются ли value1 и value2 массивами для tags
+                if (Array.isArray(value1) && Array.isArray(value2)) {
+                    const tag1 = value1[0] || '';
+                    const tag2 = value2[0] || '';
+                    return tag1.localeCompare(tag2);
+                } else if (typeof value1 === 'string' && typeof value2 === 'string') {
+                    // Сортировка по строковым значениям
+                    return value1.localeCompare(value2);
+                } else if (typeof value1 === 'boolean' && typeof value2 === 'boolean') {
+                    // Сортировка по значениям boolean (is_made)
+                    return value1 === value2 ? 0 : (value1 ? -1 : 1);
+                } else {
+                    return 0;
+                }
+            });
         }
     },
     methods: {
+        ...mapActions(['getAllPosts', 'deletePostById']),
         // Добавление поста
         addTask(post) {
             this.posts.push(post)
         },
         // Удаление поста
-        removePost(post) {
-            this.posts = this.posts.filter(elem => elem.id !== post.id)
+        removePost(id) {
+            this.$store.dispatch('deletePostById', { id });
         },
     }
 }

@@ -5,23 +5,23 @@
       <!-- Вывод постов таблицей -->
       <table class="task-item" v-for="post in posts" :key="post.id">
         <tr>
-          <td class="title">{{ post.title }}</td>
+          <td class="title"> {{ `№${post.id}. ${post.title}` }}</td>
           <td class="options">
             <div class="tags-date-wrapper">
-              <div class="tags">{{ post.tags }}</div>
+              <div class="tags">{{ post.tags.join(' / ') }}</div>
               <div class="separator"></div>
-              <div class="date">{{ post.date }}</div>
+              <div class="date">{{ formatDate(post.date) }}</div>
               <div class="separator"></div>
             </div>
             <div class="author-options-wrapper">
-              <div class="author">{{ post.authors }}</div>
+              <div class="author">{{ post.author }}</div>
               <div class="separator"></div>
               <div class="options-block">
                 <div class="is-made">
                   <u-input type="checkbox" v-model="post.is_made" />
                 </div>
-                <!-- Изменение поста (Пока не работает) -->
-                <div class="edit">
+                <!-- Изменение поста -->
+                <div class="edit" @click="showPopup(post)">
                   <svg fill="#000000" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink" width="15px" height="15px" viewBox="0 0 528.899 528.899"
                     xml:space="preserve">
@@ -34,7 +34,7 @@
                   </svg>
                 </div>
                 <!-- Удаление -->
-                <div class="trash" @click="$emit('remove', post)">
+                <div class="trash" @click="$emit('remove', post.id)">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash"
                     viewBox="0 0 16 16">
                     <path
@@ -43,6 +43,25 @@
                       d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
                   </svg>
                 </div>
+                <!-- Модальное окно изменения поста -->
+                <u-popup v-if="isPopupVisible" @closePopup="showPopup">
+                  <form @submit.prevent="editPost">
+                    <h3 class="h3-text">Изменение поста {{ editedPost.id }}</h3>
+                    <div class="x-title">
+                      <u-input class="u-input" placeholder="Название" type="text" v-model="editedPost.title"></u-input>
+                    </div>
+                    <div class="x-tags">
+                      <u-select :text="'Измените тэг'" :options="allTags" v-model="editedPost.tags"></u-select>
+                    </div>
+                    <div class="x-author">
+                      <u-select :text="'Измение автора'" :options="allAuthors" v-model="editedPost.author"></u-select>
+                    </div>
+                    <div class="x-is-made">
+                      <u-input type="checkbox" v-model="editedPost.is_made"></u-input>
+                    </div>
+                    <u-button class="create-btn" type="submit">Изменить</u-button>
+                  </form>
+                </u-popup>
               </div>
             </div>
           </td>
@@ -59,9 +78,8 @@
 </template>
 
 <script>
-import UPopup from './UI/UPopup.vue'
+import { mapActions, mapGetters } from 'vuex';
 export default {
-  components: { UPopup },
   name: "TaskItem",
   props: {
     posts: {
@@ -71,12 +89,55 @@ export default {
   data() {
     return {
       isChecked: false,
+      isPopupVisible: false,
+      editedPost: {},
     }
-  }
+  },
+  computed: {
+    ...mapGetters(['allTags', 'allAuthors']),
+  },
+  methods: {
+    ...mapActions(['editPostById',]),
+    // Открытие закрытие модального окна
+    showPopup(post) {
+      this.isPopupVisible = !this.isPopupVisible;
+      this.editedPost = { ...post }
+      this.editedPost.tags = this.editedPost.tags.join('')
+    },
+    // Изменение поста
+    editPost() {
+      this.editedPost.tags = [this.editedPost.tags]
+
+      this.editPostById({
+        id: this.editedPost.id,
+        title: this.editedPost.title,
+        tags: this.editedPost.tags,
+        author: this.editedPost.author,
+        is_made: this.editedPost.is_made
+      })
+
+      this.isPopupVisible = false;
+    },
+    // Форматирование даты в привычный вид
+    formatDate(date) {
+      const options = { year: "numeric", month: "long", day: "numeric" };
+      return new Date(date).toLocaleDateString(undefined, options);
+    },
+  },
 }
 </script>
 
 <style scoped>
+
+.x-title,
+.x-tags,
+.x-author,
+.x-is-made {
+  margin: 10px;
+  margin-bottom: 15px;
+}
+
+
 tr {
   width: -webkit-fill-available;
 }

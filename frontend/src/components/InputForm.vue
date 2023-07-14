@@ -1,16 +1,17 @@
 <template>
   <div class="input-form">
     <!-- Popup -->
-    <u-popup v-if="isPopupVisible" @closePopup="showPopup">
+    <u-popup v-if="isPopupVisible" @closePopup="showPopup"> 
       <!-- Form -->
-      <form class="form" @submit.prevent="handleSubmit">
+      <form class="form" @submit.prevent="addTask">
+        <h3 class="h3-text">Создание поста</h3>
         <!-- Title -->
         <div class="v-title">
           <u-input class="u-input" placeholder="Название" type="text" v-model="postData.title" />
         </div>
         <!-- Select tags -->
         <div class="v-option">
-          <u-select v-model="selectedTag" :options="tags" :text='"Выберите тэг"'></u-select>
+          <u-select v-model="selectedTag" :options="allTags" :text='"Выберите тэг"'></u-select>
           <div v-if="!isAddTagVisible" class="add" @click="toggleAddTag">
             <div class="add-author">+</div>
           </div>
@@ -22,7 +23,7 @@
         </div>
         <!-- Select Author -->
         <div class="v-option">
-          <u-select v-model="selectedAuthor" :options="authors" :text='"Выберите автора"'></u-select>
+          <u-select v-model="selectedAuthor" :options="allAuthors" :text='"Выберите автора"'></u-select>
           <div v-if="!isAddAuthorVisible" class="add" @click="toggleAddAuthor">
             <div class="add-author">+</div>
           </div>
@@ -38,61 +39,64 @@
           <u-input type="checkbox" v-model="isChecked" />
         </div>
         <div class="wrapper-btn">
-          <u-button class="create-btn" type="submit" @click="addTask">Создать</u-button>
+          <u-button class="create-btn" type="submit">Создать</u-button>
         </div>
       </form>
     </u-popup>
 
-    <u-button class="create-btn" @click="showPopup">Создать задачу</u-button>
+    <u-button class="create-btn" type="submit" @click="showPopup">Создать задачу</u-button>
   </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex';
+
 export default {
   name: "InputForm",
   data() {
     return {
+      newTag: "",         // Состояние из инпута с вводом тэга
+      selectedTag: "",    // Значение выбраного тэга
+      newAuthor: "",      // Состояние из инпута с вводом автора
+      selectedAuthor: "", // Значение выбранного автора 
+
       isPopupVisible: false,      // Состояние видимости модального окна
       isAddTagVisible: false,     // Состояние видимости формы для ввода тэга
       isAddAuthorVisible: false,  // Состояние видимости формы для ввода автора
       isChecked: false,           // Состояние чекбокса
 
-      //Массив объектов с тэгами
-      tags: [
-        { id: 1, value: "KSB", name: "KSB" },
-        { id: 2, value: "Home", name: "Home" },
-        { id: 3, value: "Other", name: "Other" },
-      ],
-
-      //Массив объектов с авторами
-      authors: [
-        { id: 1, value: "Кирилл", name: "Кирилл" },
-        { id: 2, value: "Никита", name: "Никита" },
-        { id: 3, value: "Саня", name: "Саня" },
-      ],
-
-      newTag: "",         // Состояние из инпута с вводом тэга
-      selectedTag: "",    // Значение выбраного тэга
-      newAuthor: "",      // Состояние из инпута с вводом автора
-      selectedAuthor: "", // Значение выбранного автора
-      
-      // Обьект поста
+      // Объект поста
       postData: {
         id: Date.now(),
         title: "",
-        tags: "",
+        tags: [],
         date: "",
         authors: "",
         is_made: false,
       },
     };
   },
+  created() {
+    this.getAllTags()
+    this.getAllAuthors()
+  },
+  computed: {
+    ...mapGetters([
+      'allTags',
+      'allAuthors',
+    ])
+  },
   methods: {
+    ...mapActions([
+      'getAllTags',
+      'addNewTag',
+      'getAllAuthors',
+      'addNewAuthor',
+      'addNewPost',
+    ]),
+
     // Открыть/закрыть модальное окно
     showPopup() {
-      this.isPopupVisible = !this.isPopupVisible;
-    },
-    closePopup() {
       this.isPopupVisible = !this.isPopupVisible;
     },
 
@@ -109,11 +113,10 @@ export default {
     // Добавление тэга
     addTag() {
       if (this.newTag.trim() !== "") {
-        this.tags.push({
-          id: this.tags.length,
-          value: this.newTag.trim(),
-          name: this.newTag.trim()
-        });
+        this.$store.dispatch('addNewTag', {
+          id: this.allTags.length,
+          name: this.newTag
+        })
       }
       this.newTag = "";
       this.toggleAddTag() // Закрываем форму после добавления 
@@ -122,9 +125,8 @@ export default {
     // Добавление автора
     addAuthor() {
       if (this.newAuthor.trim() !== "") {
-        this.authors.push({
-          id: this.authors.length,
-          value: this.newAuthor.trim(),
+        this.$store.dispatch('addNewAuthor', {
+          id: this.allAuthors.length,
           name: this.newAuthor.trim()
         });
       }
@@ -133,30 +135,35 @@ export default {
     },
 
     addTask() {
-      const date = new Date();                        // Создание объекта Date с текущей датой и временем
-      this.postData.id = Date.now()                   // Берем id из текущего времени в миллисекундах
-      this.postData.date = date.toLocaleDateString(); // Преобразование даты в строку с форматом даты
-
-      this.postData.tags = this.selectedTag;          // Передаем в postData.tags выбранный нами тэг в u-select
+      this.postData.tags = [this.selectedTag];        // Передаем в postData.tags выбранный нами тэг в u-select
       this.postData.authors = this.selectedAuthor;    // Передаем в postData.authors выбранного тами автора в u-select
 
-      this.$emit('create', { ...this.postData });     // Пушим новое задание
+      // Добавление нового поста
+      this.addNewPost({
+        title: this.postData.title,
+        tags: this.postData.tags,
+        author: this.selectedAuthor,
+        is_made: this.isChecked,
+      })
 
       // Очищаем все переменные
-      this.postData.tags = "";
+      this.postData.tags = [];
       this.postData.title = "";
       this.postData.authors = "";
       this.postData.is_made = false;
       this.isPopupVisible = false;
       this.selectedAuthor = "";
       this.selectedTag = "";
-
     }
   },
 };
 </script>
 
 <style scoped>
+.h3-text {
+  margin: 10px;
+}
+
 .v-title,
 .v-option,
 .v-checkbox {
@@ -264,5 +271,4 @@ select:focus {
     height: 48px;
   }
 }
-
 </style>

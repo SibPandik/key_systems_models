@@ -1,11 +1,12 @@
 <template>
   <div class="header">
     <div class="username">{{ user }}</div>
-    <u-button class="quit-button">Выйти</u-button>
+    <u-button class="quit-button" @click="logout">Выйти</u-button>
   </div>
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 export default {
   name: 'Header',
   data() {
@@ -13,6 +14,12 @@ export default {
       user: "Петровчук Кирилл",
     }
   },
+  methods: {
+    ...mapMutations(['deleteToken']),
+    logout() {
+      this.deleteToken()
+    }
+  }
 }
 </script>
 

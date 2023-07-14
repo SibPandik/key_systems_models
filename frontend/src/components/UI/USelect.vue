@@ -8,9 +8,12 @@
         <option 
             v-for="option in options" 
             :key="option.id" 
-            :value="option.value"
+            :value="option.name"
         >
+        <div v-if="option.value">{{ option.value }}</div>
+        <div v-else>
             {{ option.name }}
+        </div>
         </option>
     </select>
 </template>
@@ -20,7 +23,7 @@ export default {
     name: "USelect",
     props: {
         value: {
-            type: String
+            type: [String, Array]
         },
         options: {
             type: Array,

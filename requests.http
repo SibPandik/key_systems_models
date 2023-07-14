@@ -22,12 +22,9 @@ Content-type: application/json;
 Authorization: token dacee1060889841bdb8ddf3c634cd97d4793b267
 
 {
-    "title": "Сделать дела 2",
+    "title": "title",
     "author": "pandik",
-    "tags": [
-      "Спальня",
-      "Кухня"
-    ],
+    "tags": ["Кухня"],
     "is_made": true
 }
 
@@ -45,3 +42,22 @@ Authorization: token dacee1060889841bdb8ddf3c634cd97d4793b267
 
 DELETE https://pandikk.pythonanywhere.com/api/todo/3/
 Authorization: token dacee1060889841bdb8ddf3c634cd97d4793b267
+
+###
+POST http://localhost:8000/api-auth-token/
+Content-type: application/json;
+
+{
+    "username" : "admin",
+    "password" : "admin"
+}
+
+###
+
+DELETE https://pandikk.pythonanywhere.com/api/todo/6/
+Authorization: token dacee1060889841bdb8ddf3c634cd97d4793b267
+Content-type: application/json;
+
+{
+
+}
