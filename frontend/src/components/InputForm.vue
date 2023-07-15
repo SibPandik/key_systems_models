@@ -1,50 +1,64 @@
 <template>
   <div class="input-form">
-    <!-- Popup -->
-    <u-popup v-if="isPopupVisible" @closePopup="showPopup"> 
-      <!-- Form -->
-      <form class="form" @submit.prevent="addTask">
-        <h3 class="h3-text">Создание поста</h3>
-        <!-- Title -->
-        <div class="v-title">
-          <u-input class="u-input" placeholder="Название" type="text" v-model="postData.title" />
-        </div>
-        <!-- Select tags -->
-        <div class="v-option">
-          <u-select v-model="selectedTag" :options="allTags" :text='"Выберите тэг"'></u-select>
-          <div v-if="!isAddTagVisible" class="add" @click="toggleAddTag">
-            <div class="add-author">+</div>
-          </div>
-          <div v-else class="add">
-            <div class="add-author-cross" @click="toggleAddTag">&times;</div>
-            <u-input class="u-input-add" type="text" v-model="newTag" />
-            <u-button class="create-btn" type="submit" @click="addTag">Добавить</u-button>
-          </div>
-        </div>
-        <!-- Select Author -->
-        <div class="v-option">
-          <u-select v-model="selectedAuthor" :options="allAuthors" :text='"Выберите автора"'></u-select>
-          <div v-if="!isAddAuthorVisible" class="add" @click="toggleAddAuthor">
-            <div class="add-author">+</div>
-          </div>
-          <div v-else class="add">
-            <div class="add-author-cross" @click="toggleAddAuthor">&times;</div>
-            <u-input class="u-input-add" type="text" v-model="newAuthor" />
-            <u-button class="create-btn" type="submit" @click="addAuthor">Добавить</u-button>
-          </div>
-        </div>
-        <!-- Is made checkbox -->
-        <div class="v-checkbox">
-          <label class="is-made">Сделано ли задание:</label>
-          <u-input type="checkbox" v-model="isChecked" />
-        </div>
-        <div class="wrapper-btn">
-          <u-button class="create-btn" type="submit">Создать</u-button>
-        </div>
-      </form>
-    </u-popup>
 
-    <u-button class="create-btn" type="submit" @click="showPopup">Создать задачу</u-button>
+    <!-- Popup -->
+    <transition name="fade">
+      <u-popup v-show="isPopupVisible" @closePopup="showPopup">
+        
+        <!-- Form -->
+        <form class="form" @submit.prevent="addTask">
+          <h3 class="h3-text">Создание поста</h3>
+
+          <!-- Title -->
+          <div class="v-title">
+            <u-input class="u-input" placeholder="Название" type="text" v-model="postData.title" />
+          </div>
+
+          <!-- Select tags -->
+          <div class="v-option">
+            <u-select v-model="selectedTag" :options="allTags" :text='"Выберите тэг"'></u-select>
+            <div v-if="!isAddTagVisible" class="add" @click="toggleAddTag">
+              <div class="add-author">+</div>
+            </div>
+            <div v-else class="add">
+              <div class="add-author-cross" @click="toggleAddTag">&times;</div>
+              <u-input class="u-input-add" type="text" v-model="newTag" valid/>
+              <u-button class="create-btn" type="submit" @click="addTag">Добавить</u-button>
+            </div>
+            <transition name="fade">
+              <div v-if="errorTagMessage" class="error">{{ errorTagMessage }}</div>
+            </transition>
+          </div>
+
+          <!-- Select Author -->
+          <div class="v-option">
+            <u-select v-model="selectedAuthor" :options="allAuthors" :text='"Выберите автора"'></u-select>
+            <div v-if="!isAddAuthorVisible" class="add" @click="toggleAddAuthor">
+              <div class="add-author">+</div>
+            </div>
+            <div v-else class="add">
+              <div class="add-author-cross" @click="toggleAddAuthor">&times;</div>
+              <u-input class="u-input-add" type="text" v-model="newAuthor" valid/>
+              <u-button class="create-btn" type="submit" @click="addAuthor">Добавить</u-button>
+            </div>
+            <transition name="fade">
+              <div v-if="errorAuthorMessage" class="error">{{ errorAuthorMessage }}</div>
+            </transition>
+          </div>
+
+          <!-- Is made checkbox -->
+          <div class="v-checkbox">
+            <label class="is-made">Сделано ли задание:</label>
+            <u-input type="checkbox" v-model="isChecked" />
+          </div>
+          <div class="wrapper-btn">
+            <u-button class="create-btn" type="submit">Создать</u-button>
+          </div>
+        </form>
+      </u-popup>
+    </transition>
+
+    <u-button class="create-btn create-task" type="submit" @click="showPopup">Создать задачу</u-button>
   </div>
 </template>
 
@@ -67,10 +81,8 @@ export default {
 
       // Объект поста
       postData: {
-        id: Date.now(),
         title: "",
         tags: [],
-        date: "",
         authors: "",
         is_made: false,
       },
@@ -84,6 +96,8 @@ export default {
     ...mapGetters([
       'allTags',
       'allAuthors',
+      'errorTagMessage',
+      'errorAuthorMessage',
     ])
   },
   methods: {
@@ -98,6 +112,8 @@ export default {
     // Открыть/закрыть модальное окно
     showPopup() {
       this.isPopupVisible = !this.isPopupVisible;
+      this.selectedAuthor = "";
+      this.selectedTag = "";
     },
 
     // Скрыть/показать форму для добавление тэга и автора
@@ -113,7 +129,7 @@ export default {
     // Добавление тэга
     addTag() {
       if (this.newTag.trim() !== "") {
-        this.$store.dispatch('addNewTag', {
+        this.addNewTag({
           id: this.allTags.length,
           name: this.newTag
         })
@@ -125,10 +141,10 @@ export default {
     // Добавление автора
     addAuthor() {
       if (this.newAuthor.trim() !== "") {
-        this.$store.dispatch('addNewAuthor', {
+        this.addNewAuthor({
           id: this.allAuthors.length,
           name: this.newAuthor.trim()
-        });
+        })
       }
       this.newAuthor = "";
       this.toggleAddAuthor() // Закрываем форму после добавления
@@ -160,6 +176,27 @@ export default {
 </script>
 
 <style scoped>
+.create-btn.create-task {
+  height: 49px;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity .5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.error {
+  font-size: 12px;
+  color: red;
+  display: flex;
+  align-items: center;
+}
+
 .h3-text {
   margin: 10px;
 }

@@ -8,6 +8,7 @@
             :checked="value"
             @input="updateInput" 
         />
+        <p v-if="type =='text' && valid && !isInputValid && value !== ''" class="error-message">Минимальное количество символов: 3</p>
     </div>
 </template>
 
@@ -28,11 +29,20 @@ export default {
             type: String,
             default: '.u-input',
         },
+        // Атрибут указывающий нужно ли валидировать input
+        valid: {
+            type: Boolean,
+            default: false,
+        }
     },
     computed: {
         inputClass() {
             return this.class;
         },
+        isInputValid() {
+            const minInputLength = 3; // Минимальное количество символов для валидации
+            return this.value.length > minInputLength;
+        }
     },
     methods: {
         updateInput(event) {
@@ -48,8 +58,16 @@ export default {
 </script>
 
 <style scoped>
+
+.error-message {
+    padding-top: 5px;
+    color: red;
+    font-size: 12px;
+}
+
 input {
     min-height: 32px;
+    padding: 5px;
 }
 
 .u-input input {
@@ -74,5 +92,9 @@ input {
     width: -webkit-fill-available;
     margin-right: 10px;
     width: 100px;
+}
+
+.u-input.search input{
+    border-radius: 30px;
 }
 </style>

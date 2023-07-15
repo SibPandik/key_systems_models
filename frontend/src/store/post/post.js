@@ -19,6 +19,7 @@ export default {
         addPost(state, payload) {
             state.posts.push(payload)
         },
+        // Обновление поста
         updatePost(state, editedPost) {
             const index = state.posts.findIndex(post => post.id === editedPost.id);
             if (index !== -1) {
@@ -33,39 +34,56 @@ export default {
     actions: {
         // Получение всех постов
         async getAllPosts({ commit }) {
-            const response = await $ajax.get('/api/todo')
-            const posts = await response.data
-            commit('setPosts', posts)
+            try {
+                const response = await $ajax.get('/api/todo')
+                const posts = await response.data
+                commit('setPosts', posts)
+            } catch (error) {
+                console.log(error)
+            }
         },
         // Добавление новый пост
         async addNewPost({ commit }, { title, tags, author, is_made }) {
-            const response = await $ajax.post('/api/todo/',
-                {
-                    title,
-                    tags,
-                    author,
-                    is_made
+            try {
+                const response = await $ajax.post('/api/todo/',
+                    {
+                        title,
+                        tags,
+                        author,
+                        is_made
 
-                },)
-            const post = response.data
-            commit('addPost', post)
+                    },)
+                const post = response.data
+                commit('addPost', post)
+            } catch (error) {
+                console.log(error)
+            }
         },
+        // Изменение поста
         async editPostById({ commit }, { id, title, tags, author, is_made }) {
-            const response = await $ajax.put(`/api/todo/${id}/`,
-                {
-                    title,
-                    tags,
-                    author,
-                    is_made,
+            try {
+                const response = await $ajax.put(`/api/todo/${id}/`,
+                    {
+                        title,
+                        tags,
+                        author,
+                        is_made,
 
-                });
-            const editedPost = response.data;
-            commit('updatePost', editedPost);
+                    });
+                const editedPost = response.data;
+                commit('updatePost', editedPost);
+            } catch (error) {
+                console.log(error)
+            }
         },
         // Удаление поста
         async deletePostById({ commit }, { id }) {
-            await $ajax.delete(`/api/todo/${id}`)
-            commit('deletePost', id)
+            try {
+                await $ajax.delete(`/api/todo/${id}`)
+                commit('deletePost', id)
+            } catch (error) {
+                console.log(error)
+            }
         }
     }
 }

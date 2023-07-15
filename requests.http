@@ -44,7 +44,7 @@ DELETE https://pandikk.pythonanywhere.com/api/todo/3/
 Authorization: token dacee1060889841bdb8ddf3c634cd97d4793b267
 
 ###
-POST http://localhost:8000/api-auth-token/
+POST http://pandikk.pythonanywhere.com/api-auth-token/
 Content-type: application/json;
 
 {

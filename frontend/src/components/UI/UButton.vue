@@ -33,11 +33,13 @@ class='quit-button' */
   font-size: 16px;
   cursor: pointer;
   box-shadow: 0 0 5px #f44336;
+  transition: .3s;
 }
 
 .quit-button:hover {
   background-color: #d32f2f;
   box-shadow: 0 0 8px #f44336;
+  transition: .3s;
 }
 
 .quit-button:focus {
@@ -61,11 +63,14 @@ class='create-btn' */
   font-size: 16px;
   cursor: pointer;
   box-shadow: 0 0 5px #5de633;
+  min-width: max-content;
+  transition: .3s;
 }
 
 .create-btn:hover {
-  background-color: #5add32;
-  box-shadow: 0 0 8px #5de633;
+  background-color: #50c52c;
+  box-shadow: 0 0 8px #5de633;  
+  transition: .3s;
 }
 
 .create-btn:focus {

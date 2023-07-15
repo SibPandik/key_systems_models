@@ -2,6 +2,7 @@
     <div class="task">
         <random-joke></random-joke>
         <div class="up-block">
+            <u-input class="u-input search" placeholder="Поиск..." type="text" v-model="searchText" />
             <u-select :text='"Выберите сортировку"' :options="sortTextData" v-model="selectedTypeOfSort"></u-select>
             <input-form @create="addTask" />
         </div>
@@ -20,6 +21,7 @@ export default {
     components: { TaskItem, InputForm, RandomJoke, },
     data() {
         return {
+            searchText: "",
             selectedTypeOfSort: "", // Выбранный тип сортировки
             // Массив объектов значений и названий сортировки
             sortTextData: [
@@ -39,7 +41,19 @@ export default {
         ...mapGetters(['allPosts']),
         // Сортировка
         sortedPosts() {
-            return [...this.allPosts].sort((post1, post2) => {
+            return [...this.allPosts].filter(post => {
+                // Применяем фильтрацию только если есть текст поиска searchText
+                if (this.searchText) {
+                    const lowerCaseSearchText = this.searchText.toLowerCase();
+                    // Фильтрация по полю title
+                    if (post.title.toLowerCase().includes(lowerCaseSearchText)) {
+                        return true;
+                    }
+                    return false;
+                }
+                // Если нет текста поиска, возвращаем все посты без фильтрации
+                return true;
+            }).sort((post1, post2) => {
                 const value1 = post1[this.selectedTypeOfSort];
                 const value2 = post2[this.selectedTypeOfSort];
 
@@ -68,13 +82,18 @@ export default {
         },
         // Удаление поста
         removePost(id) {
-            this.$store.dispatch('deletePostById', { id });
+            this.deletePostById({ id })
         },
     }
 }
 </script>
 
 <style scoped>
+.search {
+    width: -webkit-fill-available;
+    padding: 10px;
+}
+
 .task {
     padding-bottom: 20px;
 }
@@ -86,7 +105,7 @@ export default {
     padding: 0 25px 0 25px;
 }
 
-@media (max-width: 460px) {
+@media (max-width: 700px) {
     .up-block {
         display: flex;
         flex-direction: column-reverse;

@@ -1,9 +1,11 @@
 <template>
   <div class="task-item-container">
+
     <!-- Если в posts что-то есть -->
-    <div v-if="posts.length > 0">
+    <transition-group name="slide-fade" v-show="posts.length > 0">
+      
       <!-- Вывод постов таблицей -->
-      <table class="task-item" v-for="post in posts" :key="post.id">
+      <table class="task-item" :class="{ 'is-made': post.is_made }" v-for="post in posts" :key="post.id">
         <tr>
           <td class="title"> {{ `№${post.id}. ${post.title}` }}</td>
           <td class="options">
@@ -17,12 +19,13 @@
               <div class="author">{{ post.author }}</div>
               <div class="separator"></div>
               <div class="options-block">
-                <div class="is-made">
+                <div class="is-made-checkbox" @click="updateCheckbox(post, $event)">
                   <u-input type="checkbox" v-model="post.is_made" />
                 </div>
+
                 <!-- Изменение поста -->
                 <div class="edit" @click="showPopup(post)">
-                  <svg fill="#000000" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                  <svg fill="currentColor" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink" width="15px" height="15px" viewBox="0 0 528.899 528.899"
                     xml:space="preserve">
                     <g>
@@ -33,6 +36,7 @@
                     </g>
                   </svg>
                 </div>
+
                 <!-- Удаление -->
                 <div class="trash" @click="$emit('remove', post.id)">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash"
@@ -43,37 +47,43 @@
                       d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
                   </svg>
                 </div>
+                
                 <!-- Модальное окно изменения поста -->
-                <u-popup v-if="isPopupVisible" @closePopup="showPopup">
-                  <form @submit.prevent="editPost">
-                    <h3 class="h3-text">Изменение поста {{ editedPost.id }}</h3>
-                    <div class="x-title">
-                      <u-input class="u-input" placeholder="Название" type="text" v-model="editedPost.title"></u-input>
-                    </div>
-                    <div class="x-tags">
-                      <u-select :text="'Измените тэг'" :options="allTags" v-model="editedPost.tags"></u-select>
-                    </div>
-                    <div class="x-author">
-                      <u-select :text="'Измение автора'" :options="allAuthors" v-model="editedPost.author"></u-select>
-                    </div>
-                    <div class="x-is-made">
-                      <u-input type="checkbox" v-model="editedPost.is_made"></u-input>
-                    </div>
-                    <u-button class="create-btn" type="submit">Изменить</u-button>
-                  </form>
-                </u-popup>
+                <transition name="fade">
+                  <u-popup v-show="isPopupVisible && activeItemId === post.id" @closePopup="showPopup">
+                    <form @submit.prevent="editPost">
+                      <h3 class="h3-text">Изменение поста {{ editedPost.id }}</h3>
+                      <div class="x-title">
+                        <u-input class="u-input" placeholder="Название" type="text" v-model="editedPost.title"></u-input>
+                      </div>
+                      <div class="x-tags">
+                        <u-select :text="'Измените тэг'" :options="allTags" v-model="editedPost.tags"></u-select>
+                      </div>
+                      <div class="x-author">
+                        <u-select :text="'Измение автора'" :options="allAuthors" v-model="editedPost.author"></u-select>
+                      </div>
+                      <div class="x-is-made">
+                        <u-input type="checkbox" v-model="editedPost.is_made"></u-input>
+                      </div>
+                      <u-button class="create-btn" type="submit">Изменить</u-button>
+                    </form>
+                  </u-popup>
+                </transition>
               </div>
             </div>
           </td>
         </tr>
       </table>
-    </div>
+    </transition-group>
+
     <!-- Если posts пуст -->
-    <div v-else>
-      <div class="empty">
-        <h2>Пока никаких задач :(</h2>
+    <transition name="slide-fade">
+      <div v-show="posts.length == 0">
+        <div class="empty">
+          <h2>Пока никаких задач :(</h2>
+        </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
@@ -88,9 +98,9 @@ export default {
   },
   data() {
     return {
-      isChecked: false,
       isPopupVisible: false,
-      editedPost: {},
+      editedPost: {}, // Состояние изменение поста
+      activeItemId: null,
     }
   },
   computed: {
@@ -103,6 +113,7 @@ export default {
       this.isPopupVisible = !this.isPopupVisible;
       this.editedPost = { ...post }
       this.editedPost.tags = this.editedPost.tags.join('')
+      this.activeItemId = post.id;
     },
     // Изменение поста
     editPost() {
@@ -118,6 +129,18 @@ export default {
 
       this.isPopupVisible = false;
     },
+    // Изменение при нажатии на checkbox
+    updateCheckbox(post, event) {
+      post.is_made = event.target.checked;
+
+      this.editPostById({
+        id: post.id,
+        title: post.title,
+        tags: post.tags,
+        author: post.author,
+        is_made: post.is_made,
+      })
+    },
     // Форматирование даты в привычный вид
     formatDate(date) {
       const options = { year: "numeric", month: "long", day: "numeric" };
@@ -129,12 +152,41 @@ export default {
 
 <style scoped>
 
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity .5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-fade-enter-active {
+  transition: all .3s ease;
+}
+
+.slide-fade-leave-active {
+  transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+
+.slide-fade-enter,
+.slide-fade-leave-to {
+  transform: translateX(10px);
+  opacity: 0;
+}
+
+.slide-fade-move {
+  transition: transform 1s;
+}
+
 .x-title,
 .x-tags,
 .x-author,
 .x-is-made {
   margin: 10px;
   margin-bottom: 15px;
+
 }
 
 
@@ -177,6 +229,12 @@ tr {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  transition: .5s;
+}
+
+.task-item.is-made {
+  box-shadow: 0px 2px 4px rgba(0, 255, 13, 0.61);
+  transition: .5s;
 }
 
 .title {
@@ -230,20 +288,44 @@ tr {
 .edit {
   cursor: pointer;
   margin-right: 10px;
+  color: black;
+  transition: .3s;
+}
+
+.edit:hover {
+  color: rgb(247, 160, 0);
+  transition: .3s;
+  transform: scale(1.3);
 }
 
 .trash {
   cursor: pointer;
+  color: black;
+  transition: .3s;
 }
 
-.is-made {
+.trash:hover {
+  color: red;
+  transition: .3s;
+  transform: scale(1.3);
+}
+
+.is-made-checkbox {
   display: flex;
   align-items: center;
   margin-right: 10px;
+  transition: .3s;
+
 }
 
-.is-made input[type="checkbox"] {
+.is-made-checkbox:hover {
+  transform: scale(1.3);
+  transition: .3s;
+}
+
+.is-made-checkbox input[type="checkbox"] {
   margin-right: 5px;
+  background-color: green;
 }
 
 @media (max-width: 460px) {

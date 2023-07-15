@@ -8,13 +8,16 @@
       <div class="form-group">
         <u-input type="password" placeholder="password" v-model="password"/>
       </div>
+
+      <div class="error" v-if="errorMessage">{{ errorMessage }}</div>
+
       <u-button class="create-btn" type="submit">Войти</u-button>
     </form>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
   data() {
@@ -22,6 +25,9 @@ export default {
       username: '',
       password: ''
     };
+  },
+  computed: {
+    ...mapGetters(['errorMessage'])
   },
   methods: {
     ...mapActions(['getToken']),
@@ -33,6 +39,14 @@ export default {
 </script>
 
 <style scoped>
+.error {
+  color: red;
+  margin: 10px 0 10px 0;
+}
+
+.create-btn {
+  padding: 10px;
+}
 
 h2 {
   margin-bottom: 25px;

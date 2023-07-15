@@ -5,11 +5,13 @@ const instance = axios.create({
   baseURL: "http://pandikk.pythonanywhere.com",
 });
 
-const token = localStorage.getItem('token');
-const header = 'token ' + token;
-
-instance.defaults.headers.common['Authorization'] = header
-
+instance.interceptors.request.use(async (config) => {
+  const token = localStorage.getItem('token');
+  return {
+    ...config,
+    headers: {...config.headers, Authorization: `Token ${token}`}
+  }
+})
 
 Vue.prototype.$ajax = instance;
 
