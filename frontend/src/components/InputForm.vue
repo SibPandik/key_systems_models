@@ -7,7 +7,7 @@
         
         <!-- Form -->
         <form class="form" @submit.prevent="addTask">
-          <h3 class="h3-text">Создание поста</h3>
+          <h3 class="h3-text">Создание задачи</h3>
 
           <!-- Title -->
           <div class="v-title">
@@ -16,7 +16,7 @@
 
           <!-- Select tags -->
           <div class="v-option">
-            <u-select v-model="selectedTag" :options="allTags" :text='"Выберите тэг"'></u-select>
+            <u-select v-model="selectedTag" :options="allTags" :text='"Выберите отдел"'></u-select>
             <div v-if="!isAddTagVisible" class="add" @click="toggleAddTag">
               <div class="add-author">+</div>
             </div>
@@ -32,7 +32,7 @@
 
           <!-- Select Author -->
           <div class="v-option">
-            <u-select v-model="selectedAuthor" :options="allAuthors" :text='"Выберите автора"'></u-select>
+            <u-select v-model="selectedAuthor" :options="allAuthors" :text='"Выберите сотрудника"'></u-select>
             <div v-if="!isAddAuthorVisible" class="add" @click="toggleAddAuthor">
               <div class="add-author">+</div>
             </div>

@@ -65,7 +65,7 @@ export default {
                 commit('addAuthor', newTagName)
             } catch (error) {
                 console.log(error)
-                commit('setAuthorErrorMessage', 'Ошибка при добавлении автора')
+                commit('setAuthorErrorMessage', 'Ошибка при добавлении сотрудника')
                 setTimeout(() => {
                     commit('setAuthorErrorMessage', '')
                 }, 1500)

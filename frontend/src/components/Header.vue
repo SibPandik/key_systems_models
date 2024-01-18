@@ -26,36 +26,36 @@
     <transition name="fade">
       <u-popup class="modal-delete" v-show="isPopupVisible" @closePopup="showPopup">
         <div class="tag-delete">
-          <p class="p-text">Удаление тэга</p>
+          <p class="p-text">Удаление отдела</p>
           <u-select 
             class="select-to-delete" 
             :options="allTags" 
-            :text='"Выберите тэг для удаления"' 
+            :text='"Выберите отдел для удаления"'
             v-model="selectedTag" 
             value-field="id"
           ></u-select>
           <transition name="fade">
-            <div v-if="successTagMessage" class="success">Тэг успешно удален</div>
+            <div v-if="successTagMessage" class="success">Отдел успешно удален</div>
           </transition>
 
-          <u-button class="quit-button" @click="deleteTag">Удалить тэг</u-button>
+          <u-button class="quit-button" @click="deleteTag">Удалить отдел</u-button>
           
         </div>
         <div class="author-delete">
-          <p class="p-text">Удаление автора</p>
+          <p class="p-text">Удаление сотрудника</p>
           <u-select 
             class="select-to-delete" 
             :options="allAuthors" 
-            :text='"Выберите автора для удаления"' 
+            :text='"Выберите сотрудника для удаления"'
             v-model="selectedAuthor" 
             value-field="id"
           ></u-select>
 
           <transition name="fade">
-            <div v-if="successAuthorMessage" class="success">Автор успешно удален</div>
+            <div v-if="successAuthorMessage" class="success">Сотрудник успешно удален</div>
           </transition>
 
-          <u-button class="quit-button" @click="deleteAuthor">Удалить автора</u-button>
+          <u-button class="quit-button" @click="deleteAuthor">Удалить сотрудника</u-button>
           
         </div>
       </u-popup>

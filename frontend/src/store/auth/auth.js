@@ -38,7 +38,7 @@ export default {
         // Получение токена
         async getToken({ commit }, { username, password }) {
             try {
-                const response = await axios.post('http://pandikk.pythonanywhere.com/api-auth-token/', { username, password }, {})
+                const response = await axios.post('http://localhost:8000/api-auth-token/', { username, password }, {})
                 await commit('setToken', response.data.token)
                 router.push('/')
             } catch (error) {

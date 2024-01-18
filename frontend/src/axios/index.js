@@ -2,7 +2,7 @@ import Vue from 'vue'
 import axios from 'axios'
 
 const instance = axios.create({
-  baseURL: "http://pandikk.pythonanywhere.com",
+  baseURL: "http://localhost:8000/",
 });
 
 instance.interceptors.request.use(async (config) => {

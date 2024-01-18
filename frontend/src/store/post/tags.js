@@ -65,7 +65,7 @@ export default {
                 commit('addTag', newTagName)
             } catch (error) {
                 console.log(error)
-                commit('setTagErrorMessage', 'Ошибка при добавлении тэга')
+                commit('setTagErrorMessage', 'Ошибка при добавлении отдела')
                 setTimeout(() => {
                     commit('setTagErrorMessage', '')
                 }, 1500)
